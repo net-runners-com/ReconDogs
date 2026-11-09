@@ -1,0 +1,24 @@
+# autopentest config — copy to config.toml and fill ONLY user-specific values.
+# Everything auto-derivable (PROJECT_ROOT, outputs/, .env, data/, formats/fonts,
+# tools/) is resolved from the repo location and needs NO entry here.
+# Precedence for every value: env var > this file > auto-derived default.
+
+[paths]
+# Where engagement output dirs are written. Default: <PROJECT_ROOT>/outputs
+# out_base = "/abs/path/to/outputs"          # env: AP_OUT_BASE
+# Claude skills dir (for webtrace + japanese-pdf-report). Default: ~/.claude/skills
+# skills_dir = "~/.claude/skills"            # env: AP_SKILLS_DIR
+# japanese-pdf-report scripts dir (synced skill carries a UUID). Auto-globbed under
+# skills_dir if omitted.
+# jpdf_helpers = "~/.claude/skills/synced/<uuid>/japanese-pdf-report/scripts"  # env: AP_JPDF_HELPERS
+# report_fonts = "/abs/path/formats/transilience-report-style/fonts"  # env: AP_REPORT_FONTS
+# env_file = "/abs/path/.env"                # env: AP_ENV_FILE
+
+[bins]
+# External tools: config value > AP_BIN_<NAME> env > ~/go/bin > PATH(which) > skip.
+# Only set these if the tool is NOT on PATH or ~/go/bin.
+# node   = "/abs/path/node"                  # env: AP_BIN_NODE
+# strix  = "~/.strix/bin/strix"              # env: AP_BIN_STRIX
+# httpx  = "~/go/bin/httpx"                   # env: AP_BIN_HTTPX  (ProjectDiscovery httpx)
+# dirsearch = "/abs/path/dirsearch.py"       # env: AP_BIN_DIRSEARCH
+# webtrace = "~/.claude/skills/webtrace/scripts/trace.mjs"  # env: AP_WEBTRACE

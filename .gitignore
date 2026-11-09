@@ -1,0 +1,18 @@
+# Engagement output & client data — NEVER commit
+outputs/
+*.local.*
+# Secrets / local config
+.env
+.env.*
+config.toml
+config.json
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+# Node (SlideGen clone is a separate repo)
+node_modules/
+tools/SlideGen/
+# OS
+.DS_Store
