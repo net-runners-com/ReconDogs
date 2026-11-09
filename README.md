@@ -57,6 +57,47 @@ python3 tools/tests/test_accuracy_regressions.py
 
 Output is written under `outputs/` (gitignored).
 
+## CLI options
+
+Run `python3 tools/autopentest.py --help` for the full list. Key options by category:
+
+### Core scan
+| Option | Meaning |
+|---|---|
+| `--target TARGET` | Target host/URL. |
+| `--profile NAME` | Preset phase subset + workers (see below). **Recommended: `diagnosis`** for a full active assessment. With no `--profile`, an LLM planner picks one — which may select a shallow profile. |
+| `--scenario NAME` | Threat/compliance preset (e.g. `owasp-top10-2025`, `nist-sp-800-115`). |
+| `--level {1,2,3}` | `1`=non-destructive scan (default); `2`=active exploitation (needs `--consent-file`); `3`=destructive-capability (needs consent + admin password). |
+| `--only PHASE...` / `--skip PHASE...` | Run/skip specific phases. `--no-deps` disables auto-dependency expansion. |
+| `--workers N` | Concurrency (default 10). `--out-base DIR` output base (default `./outputs`). |
+| `--list-profiles` / `--list-scenarios` | List presets and exit. |
+
+**Profiles:** `recon-passive`, `recon-active`, `pentest-full`, `diagnosis`, `pentest-fast`, `bugbounty`, `api-only`, `cve-sweep`, `iot-ot`, `cloud`, `auth-deep`, `supply-chain`, `email-dns`, `red-team-{ad,cloud,web,ics,llm}`.
+
+### Authentication
+`--cookie` / `--auth-header` / `--auth-host` (scope auth to a host; omit → auth never sent) · `--cookie-b` (second session for authz-bypass comparison) · `--consent-file` (required for Level 2).
+
+### Level 2 — active exploitation (signed consent required)
+`--allow-brute WORDLIST` · `--allow-sqli-dump` (UNION, first 3 rows) · `--allow-rce-poc` (`id`/`whoami`/`hostname` only) · `--allow-authz-bypass` · `--allow-chain-exploit`.
+
+### Level 3 — destructive capability (consent + admin password)
+`--allow-dos-test` (bounded, not a flood) · `--allow-cred-exfil` (row-capped) · `--allow-persistence` (write→verify→delete) · `--admin-hash-file` / `--admin-pass-setup`.
+
+### Diff / re-run / autonomous
+`--delta PREV_DIR` (only new/changed findings) · `--resume PREV_DIR` · `--retest-of PREV_DIR` (still-present vs fixed) · `--goal "..."` (LLM goal decomposition) · `--autonomous` (`--max-iters`, `--budget-min`) · `--self-update[-check]`.
+
+### CVE & threat-intel feeds
+`--cve-feed-update` · `--threat-feeds-update` · `--epss-sync` · `--exploitdb-sync` · `--attack-sync` · `--lolbas-sync` · `--gtfobins-sync` · `--vulnrichment-sync` · `--misp-sync`.
+
+### Knowledge / RAG / memory
+`--knowledge-db` · `--rag-ingest|--rag-query|--rag-reindex` · `--knowledge-stats` · `--suppress-known-fps DIR` · `--learn-from-benchmark DIR` · `--review-engagement DIR` · `--memory-record-ep|--memory-distill-rules|--memory-ground|--memory-fact`.
+
+### Free OSINT / recon (no API key)
+`--free-shodan` (InternetDB) · `--free-ct` (crt.sh) · `--free-rdap` · `--free-otx` · `--free-urlscan` · `--free-wayback` · `--free-sherlock` (300+ platforms) · `--free-reputation` · `--free-ipinfo` · `--osint-query source:query` (shodan/censys/fofa/netlas…) · `--searxng-url|--searxng-browser|--searxng-rerank`.
+
+### I/O & integrations
+`--import-scan fmt:path` (nessus/nuclei/zap/trivy) · `--export-findings fmt:dir` (sarif/stix/cyclonedx/csv) · `--tiered-report` (CONFIRMED/TRIAGE/WEAK) · `--cvss-calc` · `--detect-rules sigma|suricata` · `--classify-rdns|--classify-ip` · `--caldera-*` · `--metrics-serve` · `--safe-exec` · `--oob-new|--oob-poll`.
+
 ## Safety & authorization
 
 - **Default runs are non-destructive.** Active exploitation (SQLi dump, RCE PoC, auth-bypass, DoS) is gated behind explicit `--level 2` / `--allow-*` flags and is **off by default**.
