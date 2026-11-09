@@ -40,10 +40,33 @@ External tools are resolved via `config.py` (`PATH`, `~/go/bin`, or `config.toml
 
 ## Usage
 
-```bash
-# Non-destructive diagnosis scan
-python3 tools/autopentest.py --target example.com --profile diagnosis
+### Recommended: full non-destructive diagnosis
 
+The `diagnosis` profile runs the full active-but-non-destructive assessment — tech/CMS/PHP fingerprint, WordPress plugin enumeration + version-aware CVE matching, headers/TLS/DNS/mail, crawl, secrets/exposed-files, and the code verifier. **Always pass `--profile diagnosis` explicitly** — with no `--profile` an LLM planner may pick a shallow profile (DNS/TLS/headers only), which is why unspecified scans can score uniformly low.
+
+```bash
+python3 tools/autopentest.py --target example.com --profile diagnosis --level 1 --workers 8
+```
+
+Variants:
+
+```bash
+# Match against the freshest CVEs (update the feed first)
+python3 tools/autopentest.py --cve-feed-update
+python3 tools/autopentest.py --target example.com --profile diagnosis --level 1 --workers 8
+
+# Authenticated diagnosis (also test post-login surface)
+python3 tools/autopentest.py --target example.com --profile diagnosis --level 1 \
+  --auth-host example.com --cookie 'wordpress_logged_in_xxx=...'
+
+# With an OWASP Top 10 scenario framing
+python3 tools/autopentest.py --target example.com --profile diagnosis \
+  --scenario owasp-top10-2025 --level 1
+```
+
+### Other commands
+
+```bash
 # Re-validate an existing engagement with the code verifier
 python3 tools/validate-run.py outputs/<engagement-dir>
 
